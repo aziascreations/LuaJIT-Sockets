@@ -1,0 +1,18 @@
+# Ignoring everything
+/*.*
+/lua/*.*
+/lua/*/
+
+# IDEs
+.vs/
+.idea/
+vs/
+
+# Lua code
+!/lua/socket.lua
+!/socket_test.lua
+
+# Docs
+!.gitignore
+!LICENSE
+!readme.md
