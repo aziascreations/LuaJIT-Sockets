@@ -2,42 +2,48 @@
 local socket = require("socket")
 
 
+function print_err(msg)
+    print("\x1B[31m" .. msg .. "\x1B[97m")
+end
+
+
 print("Initializing socket libraries...")
-local init_status, err_code = socket.init()
-if not init_status then
-    print("Failed to initalize socket libraries ! (" .. err_code .. ")")
+local initialized, _ = socket.init()
+if not initialized then
+    print_err("> " .. socket.last_error_message())
     return
 end
-print("> Done")
 
 
 print("Creating IPv4 TCP socket...")
-local s, err = socket.socket(
+local sock, _ = socket.socket(
     socket.AddressFamilies.AF_INET,
     socket.SocketTypes.SOCK_STREAM,
     socket.Protocols.IPPROTO_TCP
 )
-if not s then
-    print("Failed to create socket !")
-    print("> Error: " .. err)
+if not sock then
+    print_err("\x1B[31m> " .. socket.last_error_message())
     socket.deinit()
     return
 end
-print("> Done")
 
 
-print("Doing socket magic...")
-socket.connect(s, socket.AddressFamilies.AF_INET, 1234, "127.0.0.1")
-print("> Done")
+print("Connecting to remote server...")
+local conn, _ = socket.connect(sock, socket.AddressFamilies.AF_INET, 1234, "127.0.0.1")
+if not conn then
+    print_err("\x1B[31m> " .. socket.last_error_message())
+    -- TODO: Close socket
+    socket.deinit()
+    return
+end
 
 
 print("De-initializing socket libraries...")
-local deinit_result, err_code = socket.deinit()
+local deinit_result, _ = socket.deinit()
 if not deinit_result then
-    print("Failed to de-initalize socket libraries ! (" .. err_code .. ")")
+    print_err("> " .. socket.last_error_message())
     return
 end
-print("> Done")
 
 
 print("Exiting...")
