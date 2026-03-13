@@ -22,7 +22,7 @@ local sock, _ = socket.socket(
     socket.Protocols.IPPROTO_TCP
 )
 if not sock then
-    print_err("\x1B[31m> " .. socket.last_error_message())
+    print_err("> " .. socket.last_error_message())
     socket.deinit()
     return
 end
@@ -32,15 +32,51 @@ print("Connecting to remote server...")
 local conn, _ = socket.connect(sock, socket.AddressFamilies.AF_INET, 1234, "127.0.0.1")
 if not conn then
     print_err("\x1B[31m> " .. socket.last_error_message())
-    -- TODO: Close socket
+    socket.closesocket(sock)
+    socket.deinit()
+    return
+end
+
+
+-- If calling `deinit()` right after, the data may be lost on the way.
+print("Sending some data...")
+local bytes_sent = socket.send(sock, "Test 123", nil)
+if bytes_sent == socket.SOCKET_ERROR then
+    print_err("> " .. socket.last_error_message())
+    socket.shutdown(sock, socket.SD_BOTH)
+    socket.closesocket(sock)
+    socket.deinit()
+    return
+end
+print("> Sent `" .. bytes_sent .. "` byte(s)")
+
+
+-- Skipping this step and calling `socket.deinit()` directly may lead to data not being sent out.
+print("Shutting down socket...")
+local is_shutdown, _ = socket.shutdown(sock, socket.SD_BOTH)
+if not is_shutdown then
+    print_err("> " .. socket.last_error_message())
+    socket.closesocket(sock)
+    socket.deinit()
+    return
+end
+
+
+-- Wait here with `socket.SD_SEND` to receive the remaining data.
+
+
+print("Closing socket...")
+local is_closed, _ = socket.closesocket(sock)
+if not is_closed then
+    print_err("> " .. socket.last_error_message())
     socket.deinit()
     return
 end
 
 
 print("De-initializing socket libraries...")
-local deinit_result, _ = socket.deinit()
-if not deinit_result then
+local deinitialized, _ = socket.deinit()
+if not deinitialized then
     print_err("> " .. socket.last_error_message())
     return
 end

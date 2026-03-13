@@ -26,20 +26,20 @@ local HOST = "127.0.0.1"
 local PORT = 1234
 
 -- Initializing
-local init_status, err_code = socket.init()
-if not init_status then
-    print("Failed to initalize socket libraries ! (" .. err_code .. ")")
+local initialized, _ = socket.init()
+if not initialized then
+    print("Error: " .. socket.last_error_message())
     return
 end
 
 -- Preparing IPV4 TCP socket
-local s, err = socket.socket(
+local sock, _ = socket.socket(
     socket.AddressFamilies.AF_INET,
     socket.SocketTypes.SOCK_STREAM,
     socket.Protocols.IPPROTO_TCP
 )
-if not s then
-    print("Failed to create socket ! (" .. err_code .. ")")
+if not sock then
+    print("Error: " .. socket.last_error_message())
     socket.deinit()
     return
 end
@@ -57,9 +57,9 @@ socket.connect(s, socket.AddressFamilies.AF_INET, PORT, HOST)
 -- TODO: Implement this !
 
 -- De-initializing
-local deinit_result, err_code = socket.deinit()
-if not deinit_result then
-    print("Failed to de-initalize socket libraries ! (" .. err_code .. ")")
+local deinitialized, _ = socket.deinit()
+if not deinitialized then
+    print_err("Error: " .. socket.last_error_message())
     return
 end
 
