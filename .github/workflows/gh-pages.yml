@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build LDoc documentation
-        uses: lunarmodules/ldoc@v0
+        uses: lunarmodules/ldoc@v1.5.0
         with:
           args: lua/socket/bindings.lua lua/socket/wrapper.lua
 
