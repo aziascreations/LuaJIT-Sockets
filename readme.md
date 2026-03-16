@@ -4,6 +4,18 @@ Linux socket libraries.
 
 **⚠️ This library is still in heavy development ⚠️**
 
+<!--
+**📢 This is library is in low maintenance mode** \
+I consider it feature-complete, and unless a bug is found, I don't plan on updating it.
+-->
+
+
+## Features
+* ~~BSD-compaptible bindings~~
+* ~~OOP-friendly wrapper around the bindings~~
+* ~~Transparent multi-platform support~~
+  * ~~Toggle-able automatic calls to `WSAStartup` and `WSAStartup` for WinSock~~
+
 
 ## Requirements
 * A somewhat modern OS
@@ -28,7 +40,7 @@ TODO: Manual and LuaRocks
 | ...           | ...           | ...           |
 | `shutdown`    | `shutdown`    | `shutdown`    |
 | `closesocket` | `closesocket` | `closesocket` |
-| `WSACleanup`  |               | `deinit` **   |
+| `WSAStartup`  |               | `deinit` **   |
 
 <i>* : Typical flow outside of this library</i> \
 <i>** : Does nothing on Linux platforms</i>

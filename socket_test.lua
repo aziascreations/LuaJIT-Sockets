@@ -1,10 +1,6 @@
 
-local socket = require("socket")
-
-
-function print_err(msg)
-    print("\x1B[31m" .. msg .. "\x1B[97m")
-end
+--local socket = require("socket.bindings")
+local socket = require("socket.wrapper")
 
 
 print("Initializing socket libraries...")
@@ -53,7 +49,7 @@ print("> Sent `" .. bytes_sent .. "` byte(s)")
 
 -- Skipping this step and calling `socket.deinit()` directly may lead to data not being sent out.
 print("Shutting down socket...")
-local is_shutdown, _ = socket.shutdown(sock, socket.SD_BOTH)
+local is_shutdown, _ = socket.shutdown(sock, socket.ShutdownFlags.SD_BOTH)
 if not is_shutdown then
     print_err("> " .. socket.last_error_message())
     socket.closesocket(sock)
