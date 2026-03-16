@@ -1,0 +1,87 @@
+
+-- Loading the wrapper.
+-- The bindings from `socket.bindings` library can be accessed via `require("socket.wrapper").bindings`.
+local socket = require("socket.wrapper")
+
+
+-- Only required on Windows for WinSock.
+print("Initializing socket libraries...")
+local initialized, _ = socket.init()
+if not initialized then
+    error(socket.last_error_message())
+    return
+end
+
+-- Adjust as needed if your tests require UDP/IPv6/...
+-- Make sure to change the `socket.connect()` call too !
+print("Creating IPv4 TCP socket...")
+local sock, _ = socket.socket(
+    socket.AddressFamilies.AF_INET,
+    socket.SocketTypes.SOCK_STREAM,
+    socket.Protocols.IPPROTO_TCP
+)
+if not sock then
+    error(socket.last_error_message())
+    socket.deinit()
+    return
+end
+
+
+-- See the included echo server examples.
+print("Connecting to remote server...")
+local conn, _ = socket.connect(sock, socket.AddressFamilies.AF_INET, 1234, "127.0.0.1")
+if not conn then
+    error(socket.last_error_message())
+    socket.closesocket(sock)
+    socket.deinit()
+    return
+end
+
+
+-- Calling `deinit()` right after, without calling `shutdown()` properly
+--  will likely lead to data being lost in transit !
+print("Sending some data...")
+local bytes_sent = socket.send(sock, "Test 123", nil)
+if bytes_sent == socket.SOCKET_ERROR then
+    error(socket.last_error_message())
+    socket.shutdown(sock, socket.SD_BOTH)
+    socket.closesocket(sock)
+    socket.deinit()
+    return
+end
+print("> Sent `" .. bytes_sent .. "` byte(s)")
+
+
+-- Skipping this step and calling `socket.deinit()` directly may lead to data not being sent out.
+print("Shutting down socket...")
+local is_shutdown, _ = socket.shutdown(sock, socket.ShutdownFlags.SD_BOTH)
+if not is_shutdown then
+    error(socket.last_error_message())
+    socket.closesocket(sock)
+    socket.deinit()
+    return
+end
+
+
+-- Optionnal: We don't wait and use `socket.ShutdownFlags.SD_SEND` since we don't expect any data.
+
+
+print("Closing socket...")
+local is_closed, _ = socket.closesocket(sock)
+if not is_closed then
+    error(socket.last_error_message())
+    socket.deinit()
+    return
+end
+
+
+print("De-initializing socket libraries...")
+local deinitialized, _ = socket.deinit()
+if not deinitialized then
+    error(socket.last_error_message())
+    return
+end
+
+
+print("Exiting...")
+return
