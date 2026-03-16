@@ -28,6 +28,8 @@ jobs:
       - name: Listing files
         run: |
           ls -la doc
+          ls -la lua
+          ls -la lua/socket
 
 #      - name: Deploy documentation to gh-pages
 #        uses: peaceiris/actions-gh-pages@v3
