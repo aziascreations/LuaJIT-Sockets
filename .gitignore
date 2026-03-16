@@ -1,18 +1,25 @@
-# Ignoring everything
-/*.*
-/lua/*.*
-/lua/*/
-
 # IDEs
 .vs/
 .idea/
 vs/
 
-# Lua code
-!/lua/socket.lua
-!/socket_test.lua
+# Runtimes
+bin/
+lua.exe
+luajit.exe
+lua51.dll
+lua/jit/
 
-# Docs
-!.gitignore
-!LICENSE
-!readme.md
+# Tools
+scripts/
+
+# Trash
+lua/_*.lua
+lua/pprint.lua
+lua/fs.lua
+test.lua
+*.pb
+*.pb.cfg
+
+# Build artifacts
+*.packed.lua
