@@ -25,15 +25,9 @@ jobs:
         with:
           args: lua/socket/bindings.lua lua/socket/wrapper.lua
 
-      - name: Listing files
-        run: |
-          ls -la doc
-          ls -la lua
-          ls -la lua/socket
-
-#      - name: Deploy documentation to gh-pages
-#        uses: peaceiris/actions-gh-pages@v3
-#        if: ${{ github.ref == 'refs/heads/master' }}
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          publish_dir: ./docs/html
+      - name: Deploy documentation to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/master' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./doc
