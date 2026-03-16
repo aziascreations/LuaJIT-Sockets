@@ -27,7 +27,7 @@ jobs:
 
       - name: Listing files
         run: |
-          ls -lar
+          ls -la doc
 
 #      - name: Deploy documentation to gh-pages
 #        uses: peaceiris/actions-gh-pages@v3
