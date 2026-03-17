@@ -6,7 +6,7 @@ local socket = require("socket.wrapper")
 print("Initializing socket libraries...")
 local initialized, _ = socket.init()
 if not initialized then
-    print_err("> " .. socket.last_error_message())
+    print("> " .. socket.last_error_message())
     return
 end
 
@@ -18,7 +18,7 @@ local sock, _ = socket.socket(
     socket.Protocols.IPPROTO_TCP
 )
 if not sock then
-    print_err("> " .. socket.last_error_message())
+    print("> " .. socket.last_error_message())
     socket.deinit()
     return
 end
@@ -27,7 +27,7 @@ end
 print("Connecting to remote server...")
 local conn, _ = socket.connect(sock, socket.AddressFamilies.AF_INET, 1234, "127.0.0.1")
 if not conn then
-    print_err("\x1B[31m> " .. socket.last_error_message())
+    print("\x1B[31m> " .. socket.last_error_message())
     socket.closesocket(sock)
     socket.deinit()
     return
@@ -38,7 +38,7 @@ end
 print("Sending some data...")
 local bytes_sent = socket.send(sock, "Test 123", nil)
 if bytes_sent == socket.SOCKET_ERROR then
-    print_err("> " .. socket.last_error_message())
+    print("> " .. socket.last_error_message())
     socket.shutdown(sock, socket.SD_BOTH)
     socket.closesocket(sock)
     socket.deinit()
@@ -51,7 +51,7 @@ print("> Sent `" .. bytes_sent .. "` byte(s)")
 print("Shutting down socket...")
 local is_shutdown, _ = socket.shutdown(sock, socket.ShutdownFlags.SD_BOTH)
 if not is_shutdown then
-    print_err("> " .. socket.last_error_message())
+    print("> " .. socket.last_error_message())
     socket.closesocket(sock)
     socket.deinit()
     return
@@ -64,7 +64,7 @@ end
 print("Closing socket...")
 local is_closed, _ = socket.closesocket(sock)
 if not is_closed then
-    print_err("> " .. socket.last_error_message())
+    print("> " .. socket.last_error_message())
     socket.deinit()
     return
 end
@@ -73,7 +73,7 @@ end
 print("De-initializing socket libraries...")
 local deinitialized, _ = socket.deinit()
 if not deinitialized then
-    print_err("> " .. socket.last_error_message())
+    print("> " .. socket.last_error_message())
     return
 end
 

@@ -4,20 +4,26 @@
 -- ========================================
 --  ???
 -- ========================================
+
 -- Compilation options
+-- -------------------
 -- ???
--- Imports
--- -------
+
+
+-- Setup
+-- -----
 local bit = require("bit")
 local ffi = require("ffi")
 local jit = require("jit")
 
--- Module root
--- -----------
+--- Module that provides basic and platform-dependant bindings for socket-related functions.
+-- @module socket.bindings
+-- @alias M
 local M = {}
 
--- Bindings > Commons > Constants
--- ------------------------------
+
+-- Constants
+-- ---------
 
 -- AddressFamilies
 M.AF_UNSPEC = 0
@@ -68,7 +74,7 @@ M.SD_BOTH = 2
 -- Defined in `_socket_types.h`
 M.SOCKET_ERROR = -1
 
--- Bindings > Commons > C Definitions
+-- Bindings - Commons - C Definitions
 -- ----------------------------------
 
 -- Typedefs
@@ -101,7 +107,7 @@ ffi.cdef [[
     uint32_t inet_addr(const char* cp);
 ]]
 
--- Bindings > Platform-specificity
+-- Bindings - Platform-specificity
 -- -----------------------------------------
 
 -- Copying platform-specific things
@@ -121,16 +127,16 @@ if ffi.os == "Windows" then
     ---  * https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-htons
     ---  * https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-inet_addr
 
-    -- Bindings > Win32 > Constants
+    -- Bindings - Win32 - Constants
     -- ----------------------------
 
-    -- Bindings > Win32 > Constants > Odities
+    -- Bindings - Win32 - Constants - Odities
     -- --------------------------------------
 
     -- Note: Linux has another value or constant for the same use, figure it out later...
     M.INVALID_SOCKET = -1
 
-    -- Bindings > Win32 > Constants > Error codes
+    -- Bindings - Win32 - Constants - Error codes
     -- ------------------------------------------
     M.WSA_INVALID_HANDLE = 6
     M.WSA_NOT_ENOUGH_MEMORY = 8
@@ -228,16 +234,16 @@ if ffi.os == "Windows" then
     M.WSA_QOS_ESHAPERATEOBJ = 11030
     M.WSA_QOS_RESERVED_PETYPE = 11031
 
-    -- Bindings > Win32 > Constants > Struct array sizes
+    -- Bindings - Win32 - Constants - Struct array sizes
     -- -------------------------------------------------
     M.WSADESCRIPTION_LEN = 256
     M.WSASYS_STATUS_LEN = 128
 
-    -- Bindings > Win32 > DLL Loading
+    -- Bindings - Win32 - DLL Loading
     -- ------------------------------
     M._socket_lib = ffi.load("Ws2_32")
 
-    -- Bindings > Win32 > C Definitions
+    -- Bindings - Win32 - C Definitions
     -- --------------------------------
     -- Notes:
     --  The sizes used in the structure are present in `WSADESCRIPTION_LEN` and `WSASYS_STATUS_LEN`
@@ -282,7 +288,7 @@ if ffi.os == "Windows" then
         int WSAStartup(USHORT wVersionRequested, WSADATA* lpWSAData);
     ]]
 
-    -- Bindings > Win32 > Function Exposure
+    -- Bindings - Win32 - Function Exposure
     -- --------------------------------------
     M.connect = M._socket_lib.connect
     M.socket = M._socket_lib.socket
@@ -296,6 +302,7 @@ if ffi.os == "Windows" then
     M.WSACleanup = M._socket_lib.WSACleanup
 
     --- Returns the last WinSock library error code.
+    -- @function WSAGetLastError
     -- @return int
     M.WSAGetLastError = M._socket_lib.WSAGetLastError
 
