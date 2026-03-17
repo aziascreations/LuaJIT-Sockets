@@ -12,7 +12,6 @@
 
 -- Setup
 -- -----
-local bit = require("bit")
 local ffi = require("ffi")
 local jit = require("jit")
 
@@ -290,28 +289,56 @@ if ffi.os == "Windows" then
 
     -- Bindings - Win32 - Function Exposure
     -- --------------------------------------
+
+    --- ???
+    -- @function connect
     M.connect = M._socket_lib.connect
+
+    --- ???
+    -- @function socket
     M.socket = M._socket_lib.socket
+
+    --- ???
+    -- @function shutdown
     M.shutdown = M._socket_lib.shutdown
+
+    --- ???
+    -- @function closesocket
     M.closesocket = M._socket_lib.closesocket
+
+    --- ???
+    -- @function send
     M.send = M._socket_lib.send
 
+    --- ???
+    -- @function htons
     M.htons = M._socket_lib.htons
+
+    --- ???
+    -- @function inet_addr
     M.inet_addr = M._socket_lib.inet_addr
 
+    --- ???
+    -- @function WSACleanup
+    -- @return integer
     M.WSACleanup = M._socket_lib.WSACleanup
 
     --- Returns the last WinSock library error code.
     -- @function WSAGetLastError
-    -- @return int
+    -- @return integer
     M.WSAGetLastError = M._socket_lib.WSAGetLastError
 
+    --- Sets the last error code that is retrieved via `WSAGetLastError()`.
+    -- @function WSASetLastError
+    -- @param integer iError A value from the `bindings.WSA*` constants family.
+    -- @return integer
     M.WSASetLastError = M._socket_lib.WSASetLastError
 
     --- Starts the WinSock library in order to be able to create sockets.
+    -- @function WSAStartup
     -- @param USHORT wVersionRequested
-    -- @param WSADATA* lpWSAData$
-    -- @return int
+    -- @param WSADATA* lpWSAData
+    -- @return integer ???
     M.WSAStartup = M._socket_lib.WSAStartup
 
 else

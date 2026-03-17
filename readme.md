@@ -31,136 +31,114 @@ TODO: Manual and LuaRocks
 
 ## Usage
 
+
+### Module types/scopes
+
+#### Bindings
+> Module that provides basic and platform-dependant bindings for socket-related functions.
+
+#### Wrapper
+> Module that provides platform-independant wrappers for socket-related functions while
+keeping the platform-dependant error constants.
+
+#### OOP
+> **PLANNED, NOT IMPLEMENTED** \
+  Module that provides an OOP-friendly and self-managed way of using sockets without having
+  to manage their initialisation and proper closure.
+
+
+
 ### Call flow
-| Windows*      | Linux*        | This library  |
-|---------------|---------------|---------------|
-| `WSAStartup`  |               | `init` **     |
-| `socket`      | `socket`      | `socket`      |
-| `connect`     | `connect`     | `connect`     |
-| ...           | ...           | ...           |
-| `shutdown`    | `shutdown`    | `shutdown`    |
-| `closesocket` | `closesocket` | `closesocket` |
-| `WSAStartup`  |               | `deinit` **   |
+| Windows Bindings* | Linux Bindings* | Wrapper       | OOP |
+|-------------------|-----------------|---------------|-----|
+| `WSAStartup`      |                 | `init` **     | ??? |
+| `socket`          | `socket`        | `socket`      | ??? |
+| `connect`         | `connect`       | `connect`     | ??? |
+| ...               | ...             | ...           | ??? |
+| `shutdown`        | `shutdown`      | `shutdown`    | ??? |
+| `closesocket`     | `closesocket`   | `closesocket` | ??? |
+| `WSAStartup`      |                 | `deinit` **   | ??? |
 
-<i>* : Typical flow outside of this library</i> \
-<i>** : Does nothing on Linux platforms</i>
-
-
-### Basics
-???
+<i>* : Bindings module, or other system programming languages</i> \
+<i>** : Does nothing on Linux platforms (TODO: See it this holds true)</i>
 
 
-### Client
+### Feel of the API
 
 <table>
 <thead><tr>
 <th>Bindings</th>
 <th>Wrapper</th>
+<th>OOP</th>
 </tr></thead>
 <tbody><tr><td>
 
 ```lua
-local socket = require("socket")
-
-local HOST = "127.0.0.1"
-local PORT = 1234
-
--- Initializing
-local initialized, _ = socket.init()
-if not initialized then
-    print("Error: " .. socket.last_error_message())
-    return
-end
-
--- Preparing IPV4 TCP socket
-local sock, _ = socket.socket(
-    socket.AddressFamilies.AF_INET,
-    socket.SocketTypes.SOCK_STREAM,
-    socket.Protocols.IPPROTO_TCP
+-- Preparing data
+local data_to_send = "Test 123"
+local data_pointer = ffi.cast(
+    "const char *",
+    data_to_send
 )
-if not sock then
-    print("Error: " .. socket.last_error_message())
-    socket.deinit()
-    return
-end
-
--- Connecting
-socket.connect(s, socket.AddressFamilies.AF_INET, PORT, HOST)
+local data_length = #data_to_send
 
 -- Sending data
--- TODO: Implement this !
+local bytes_sent = socket.send(
+    sock,
+    data_pointer,
+    data_length,
+    0
+)
 
--- Closing connection
--- TODO: Implement this !
-
--- Closing socket
--- TODO: Implement this !
-
--- De-initializing
-local deinitialized, _ = socket.deinit()
-if not deinitialized then
-    print_err("Error: " .. socket.last_error_message())
+-- Error handling
+if bytes_sent == socket.SOCKET_ERROR then
+    error("Error in `socker.send()` !")
+    socket.shutdown(sock, socket.SD_BOTH)
+    socket.closesocket(sock)
+    socket.WSACleanup()
     return
 end
-
--- Exiting
-print("Done :)")
-return
 ```
-
 </td><td>
-            
+
 ```lua
-local socket = require("socket")
+-- Preparing data
+local data_to_send = "Test 123"
 
-local HOST = "127.0.0.1"
-local PORT = 1234
 
--- Initializing
-local initialized, _ = socket.init()
-if not initialized then
-    print("Error: " .. socket.last_error_message())
-    return
-end
 
--- Preparing IPV4 TCP socket
-local sock, _ = socket.socket(
-    socket.AddressFamilies.AF_INET,
-    socket.SocketTypes.SOCK_STREAM,
-    socket.Protocols.IPPROTO_TCP
+
+
+
+-- Sending data
+local bytes_sent = socket.send(
+    sock,
+    data_to_send,
+    nil
 )
-if not sock then
-    print("Error: " .. socket.last_error_message())
+
+
+-- Error handling
+if bytes_sent == socket.SOCKET_ERROR then
+    error("Error in `socker.send()` !")
+    socket.shutdown(sock, socket.SD_BOTH)
+    socket.closesocket(sock)
     socket.deinit()
     return
 end
+```
+</td><td>
 
--- Connecting
-socket.connect(s, socket.AddressFamilies.AF_INET, PORT, HOST)
-
--- Sending data
--- TODO: Implement this !
-
--- Closing connection
--- TODO: Implement this !
-
--- Closing socket
--- TODO: Implement this !
-
--- De-initializing
-local deinitialized, _ = socket.deinit()
-if not deinitialized then
-    print_err("Error: " .. socket.last_error_message())
-    return
-end
-
--- Exiting
-print("Done :)")
-return
+```lua
+TODO: Implement OOP module
 ```
         
 </td></tr></tbody>
 </table>
+
+### Client
+
+
 
 
 ### Server

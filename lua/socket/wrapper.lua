@@ -4,23 +4,29 @@
 -- ========================================
 --  ???
 -- ========================================
+
 -- Compilation options
+-- -------------------
+
 --- Enables or disables the inclusion of human-readable error messages in `M.WSAErrorMessages`. \
---- Can be usefull if you pre-compile this library.
+-- Can be usefull if you pre-compile this library.
 local _INCLUDE_ERROR_MESSAGES = true
 
--- Imports
-local bit = require("bit")
+
+-- Setup
+-- -----
 local ffi = require("ffi")
-local jit = require("jit")
 
 local socket_bindings = require("socket.bindings")
 
--- Module root
--- -----------
+--- Module that provides platform-independant wrappers for socket-related functions while keeping the
+---  platform-dependant error constants.
+-- @module socket.wrapper
+-- @alias M
 local M = {}
 
 M.bindings = socket_bindings
+
 
 -- Private globals
 -- ---------------
