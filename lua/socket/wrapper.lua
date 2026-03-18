@@ -75,6 +75,24 @@ M.ShutdownFlags = {
     SD_BOTH = M.bindings.SD_BOTH
 }
 
+
+M.ShutdownFlags = {
+    --- Shutdown receive operations.
+    SD_RECEIVE = M.bindings.SD_RECEIVE,
+
+    --- Shutdown send operations.
+    SD_SEND = M.bindings.SD_SEND,
+
+    --- Shutdown both send and receive operations.
+    SD_BOTH = M.bindings.SD_BOTH
+}
+
+M.BindingAddresses = {
+    INADDR_ANY = M.bindings.INADDR_ANY,
+    INADDR_NONE = M.bindings.INADDR_NONE,
+}
+
+
 -- Copying platform-specific things
 if ffi.os == "Windows" then
 
@@ -381,6 +399,29 @@ if ffi.os == "Windows" then
         addr.sin_addr.s_addr = M.bindings.inet_addr(host)
 
         local conn = M.bindings.connect(s, ffi.cast("sockaddr*", addr), ffi.sizeof(addr))
+        if conn ~= 0 then
+            return false, M.bindings.WSAGetLastError()
+        end
+
+        return true, 0
+    end
+
+    --- Binds a given socket to some interface, or none.
+    ---@param s SOCKET The socket that should be bound.
+    ---@param af integer An address family from the `bindings.AF_*` constants, or the `AddressFamilies` enum.
+    ---@param port integer The bound port.
+    ---@param host string The bound interface's address, or a constant from the `bindings.INADDR_*` family, or the `BindingAddresses` enum.
+    ---@return boolean `true` if the operation succeeded, `false` otherwise.
+    ---@return integer Error code if the operation was a failure, `0` otherwise.
+    ---@see shutdown
+    ---@see listen
+    function M.bind(s, af, port, host)
+        local addr = ffi.new("sockaddr_in")
+        addr.sin_family = af
+        addr.sin_port = M.bindings.htons(port)
+        addr.sin_addr.s_addr = M.bindings.inet_addr(host)
+
+        local conn = M.bindings.bind(s, ffi.cast("sockaddr*", addr), ffi.sizeof(addr))
         if conn ~= 0 then
             return false, M.bindings.WSAGetLastError()
         end

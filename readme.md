@@ -1,4 +1,4 @@
-# LuaJIT Bindings - Sockets
+# LuaJIT - Sockets
 Pure LuaJIT bindings and wrappers for the standard Win32 and
 Linux socket libraries.
 
@@ -26,7 +26,13 @@ I consider it feature-complete, and unless a bug is found, I don't plan on updat
 
 
 ## Installation
-TODO: Manual and LuaRocks
+
+### Manual
+1. Download [latest release](https://github.com/aziascreations/LuaJIT-Sockets/releases)
+2. Extract the content of the archive in your `lua/` folder
+
+### LuaRocks
+TODO: Once this is stable
 
 
 ## Usage
@@ -42,7 +48,7 @@ TODO: Manual and LuaRocks
 keeping the platform-dependant error constants.
 
 #### OOP
-> **PLANNED, NOT IMPLEMENTED** \
+> **PLANNED** \
   Module that provides an OOP-friendly and self-managed way of using sockets without having
   to manage their initialisation and proper closure.
 

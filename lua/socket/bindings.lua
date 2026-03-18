@@ -73,6 +73,19 @@ M.SD_BOTH = 2
 -- Defined in `_socket_types.h`
 M.SOCKET_ERROR = -1
 
+
+
+M.INADDR_ANY = 0
+
+M.INADDR_NONE = 0xffffffff
+
+M.INPORT_ANY = 0
+
+
+-- Defined in `winsock2.h`
+M.SOMAXCONN = 0x7fffffff
+
+
 -- Bindings - Commons - C Definitions
 -- ----------------------------------
 
@@ -96,10 +109,15 @@ ffi.cdef [[
 
 -- Functions
 ffi.cdef [[
-    int connect(SOCKET s, sockaddr *name, int namelen);
     SOCKET socket(int af, int type, int protocol);
-    int shutdown(SOCKET s, int how);
     int closesocket(SOCKET s);
+
+    int bind(SOCKET s, sockaddr *name, int namelen);
+
+    int connect(SOCKET s, sockaddr *name, int namelen);
+    int listen(SOCKET s, int backlog);
+    int shutdown(SOCKET s, int how);
+    
     int send(SOCKET s, const char *buf, int len, int flags);
 
     USHORT htons(USHORT hostshort);
@@ -128,6 +146,7 @@ if ffi.os == "Windows" then
 
     -- Bindings - Win32 - Constants
     -- ----------------------------
+    -- LDOC doesn't like the line above for some reason...
 
     -- Bindings - Win32 - Constants - Odities
     -- --------------------------------------
@@ -291,20 +310,32 @@ if ffi.os == "Windows" then
     -- --------------------------------------
 
     --- ???
+    -- @function socket
+    M.socket = M._socket_lib.socket
+
+    --- ???
+    -- @function closesocket
+    M.closesocket = M._socket_lib.closesocket
+
+
+    --- ???
+    -- @function bind
+    M.bind = M._socket_lib.bind
+
+
+    --- ???
     -- @function connect
     M.connect = M._socket_lib.connect
 
     --- ???
-    -- @function socket
-    M.socket = M._socket_lib.socket
+    -- @function listen
+    -- @see shutdown
+    M.listen = M._socket_lib.listen
 
     --- ???
     -- @function shutdown
     M.shutdown = M._socket_lib.shutdown
 
-    --- ???
-    -- @function closesocket
-    M.closesocket = M._socket_lib.closesocket
 
     --- ???
     -- @function send
@@ -317,6 +348,7 @@ if ffi.os == "Windows" then
     --- ???
     -- @function inet_addr
     M.inet_addr = M._socket_lib.inet_addr
+
 
     --- ???
     -- @function WSACleanup

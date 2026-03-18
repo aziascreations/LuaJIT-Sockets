@@ -40,60 +40,56 @@ end
 
 -- Quite different from the wrapper version, but the calls shouldn't be platform-specific.
 -- You only REALLY need to add a transform for the hostname.
--- See the included echo server examples.
-print("Connecting to remote server...")
+print("Binding to `0.0.0.0:1234`...")
 
--- Describing the remote host, the wrapper exposes this as simple parameters.
-local addr = ffi.new("sockaddr_in")
-addr.sin_family = socket.AF_INET
-addr.sin_port = socket.htons(1234)
-addr.sin_addr.s_addr = socket.inet_addr("127.0.0.1")
+-- Describing how the socket will be bound.
+-- We'll go for `tcp://0.0.0.0:1234` in this example.
+local bound_addr = ffi.new("sockaddr_in")
+bound_addr.sin_family = socket.AF_INET
+bound_addr.sin_port = socket.htons(1234)
+bound_addr.sin_addr.s_addr = socket.inet_addr("0.0.0.0")
 
-local conn = socket.connect(sock, ffi.cast("sockaddr*", addr), ffi.sizeof(addr))
+local bind_ret_code = socket.bind(sock, ffi.cast("sockaddr*", bound_addr), ffi.sizeof(bound_addr))
 
-if conn ~= 0 then
-    error("Error in `socker.connect()` ! (" .. socket.WSAGetLastError() .. ")")
-    socket.closesocket(sock)
-    socket.WSACleanup()
-end
-
-
--- Calling `deinit()` right after, without calling `shutdown()` properly
---  will likely lead to data being lost in transit !
-print("Sending some data...")
-
-local data_to_send = "Test 456"
-local data_pointer = ffi.cast("const char *", data_to_send)
-local data_length = #data_to_send
-
-local bytes_sent = socket.send(sock, data_pointer, data_length, 0)
-if bytes_sent == socket.SOCKET_ERROR then
-    error("Error in `socker.send()` ! (" .. socket.WSAGetLastError() .. ")")
-    socket.shutdown(sock, socket.SD_BOTH)
+if bind_ret_code ~= 0 then
+    error("Error in `socker.bind()` ! (" .. socket.WSAGetLastError() .. ")")
     socket.closesocket(sock)
     socket.WSACleanup()
     return
 end
-print("> Sent `" .. bytes_sent .. "` byte(s)")
 
 
--- Skipping this step and calling `socket.deinit()` directly may lead to data not being sent out.
-print("Shutting down socket...")
-local is_shutdown, _ = socket.shutdown(sock, socket.SD_BOTH)
-if not is_shutdown then
-    error("Error in `socker.shutdown()` ! (" .. socket.WSAGetLastError() .. ")")
+-- Starting to listen on the newly bound socket.
+local listen_ret_code = socket.listen(sock, 1024)
+
+if listen_ret_code ~= 0 then
+    error("Error in `socker.listen()` ! (" .. socket.WSAGetLastError() .. ")")
     socket.closesocket(sock)
     socket.WSACleanup()
     return
 end
+
+
+-- TODO: Listen for data...
+
+
+---- Skipping this step and calling `socket.deinit()` directly may lead to data not being sent out.
+--print("Shutting down socket...")
+--local shutdown_ret_code = socket.shutdown(sock, socket.SD_BOTH)
+--if shutdown_ret_code ~= 0  then
+--    error("Error in `socker.shutdown()` ! (" .. socket.WSAGetLastError() .. ")")
+--    socket.closesocket(sock)
+--    socket.WSACleanup()
+--    return
+--end
 
 
 -- Optionnal: We don't wait and use `socket.ShutdownFlags.SD_SEND` since we don't expect any data.
 
 
 print("Closing socket...")
-local is_closed, _ = socket.closesocket(sock)
-if not is_closed then
+local closure_ret_code = socket.closesocket(sock)
+if closure_ret_code ~= 0 then
     error("Error in `socker.closesocket()` ! (" .. socket.WSAGetLastError() .. ")")
     socket.WSACleanup()
     return
