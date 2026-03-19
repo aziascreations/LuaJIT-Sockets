@@ -27,7 +27,7 @@ end
 print("Connecting to remote server...")
 local conn, _ = socket.connect(sock, socket.AddressFamilies.AF_INET, 1234, "127.0.0.1")
 if not conn then
-    print("\x1B[31m> " .. socket.last_error_message())
+    print("> " .. socket.last_error_message())
     socket.closesocket(sock)
     socket.deinit()
     return

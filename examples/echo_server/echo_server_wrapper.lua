@@ -40,6 +40,11 @@ if not conn then
 end
 
 
+-- Configuring the socket to ensure we have blocking I/O operations.
+-- This is simpler for this example since we don't want to implement a polling loop.
+-- We just want a connection, data in, data out, and a disconnection.
+
+
 -- TODO: Listen for data...
 
 

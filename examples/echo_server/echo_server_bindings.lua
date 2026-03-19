@@ -70,9 +70,16 @@ if listen_ret_code ~= 0 then
 end
 
 
+-- Configuring the socket to ensure we have blocking I/O operations.
+-- This is simpler for this example since we don't want to implement a polling loop.
+-- We just want a connection, data in, data out, and a disconnection.
+
+
+
 -- TODO: Listen for data...
 
 
+-- https://learn.microsoft.com/en-us/windows/win32/winsock/winsock-ioctls
 ---- Skipping this step and calling `socket.deinit()` directly may lead to data not being sent out.
 --print("Shutting down socket...")
 --local shutdown_ret_code = socket.shutdown(sock, socket.SD_BOTH)

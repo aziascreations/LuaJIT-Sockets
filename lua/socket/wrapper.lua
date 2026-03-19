@@ -1,9 +1,13 @@
--- ========================================
---  NibblePoker's LuaJIT Socket
---    Wrapper Root
--- ========================================
---  ???
--- ========================================
+--- Pure LuaJIT bindings for Windows and Linux native socket libraries.
+--
+-- @module socket.wrapper
+-- @author Herwin Bozet (NibblePoker)
+-- @license CC0 1.0 Universal (CC0 1.0) (Public Domain)
+-- @copyright 2026
+--
+-- @release 0.0.0
+-- @see socket.bindings
+-- @see socket.oop
 
 -- Compilation options
 -- -------------------
@@ -21,7 +25,6 @@ local socket_bindings = require("socket.bindings")
 
 --- Module that provides platform-independant wrappers for socket-related functions while keeping the
 ---  platform-dependant error constants.
--- @module socket.wrapper
 -- @alias M
 local M = {}
 
@@ -75,18 +78,7 @@ M.ShutdownFlags = {
     SD_BOTH = M.bindings.SD_BOTH
 }
 
-
-M.ShutdownFlags = {
-    --- Shutdown receive operations.
-    SD_RECEIVE = M.bindings.SD_RECEIVE,
-
-    --- Shutdown send operations.
-    SD_SEND = M.bindings.SD_SEND,
-
-    --- Shutdown both send and receive operations.
-    SD_BOTH = M.bindings.SD_BOTH
-}
-
+-- TODO: Check "winsock.h" for more !
 M.BindingAddresses = {
     INADDR_ANY = M.bindings.INADDR_ANY,
     INADDR_NONE = M.bindings.INADDR_NONE,
@@ -98,6 +90,20 @@ if ffi.os == "Windows" then
 
     -- Bindings - Win32 - Constants
     -- ----------------------------
+
+    --- Enum of standard Winsock2 commands for `ioctlsocket()`.
+    --- @see ioctlsocket
+    M.IoctlCommands = {
+        --- Get number of bytes to read
+        FIONREAD = socket_bindings.FIONREAD,
+
+        -- Set/clear non-blocking I/O
+        FIONBIO = socket_bindings.FIONBIO,
+
+        -- Set/clear async I/O
+        FIOASYNC = socket_bindings.FIOASYNC,
+    }
+
     M.WSAErrorCodes = {
         WSA_INVALID_HANDLE = 6,
         WSA_NOT_ENOUGH_MEMORY = 8,

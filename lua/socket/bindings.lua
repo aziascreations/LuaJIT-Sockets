@@ -1,9 +1,14 @@
--- ========================================
---  NibblePoker's LuaJIT Socket
---    Bindings Root
--- ========================================
---  ???
--- ========================================
+--- Pure LuaJIT bindings for Windows and Linux native socket libraries.
+--
+-- @module socket.bindings
+-- @author Herwin Bozet (NibblePoker)
+-- @license CC0 1.0 Universal (CC0 1.0) (Public Domain)
+-- @copyright 2026
+--
+-- @release 0.0.0
+-- @see socket.wrapper
+-- @see socket.oop
+
 
 -- Compilation options
 -- -------------------
@@ -12,11 +17,11 @@
 
 -- Setup
 -- -----
+local bit = require("bit")
 local ffi = require("ffi")
 local jit = require("jit")
 
 --- Module that provides basic and platform-dependant bindings for socket-related functions.
--- @module socket.bindings
 -- @alias M
 local M = {}
 
@@ -256,6 +261,66 @@ if ffi.os == "Windows" then
     -- -------------------------------------------------
     M.WSADESCRIPTION_LEN = 256
     M.WSASYS_STATUS_LEN = 128
+
+    -- Bindings - Win32 - Constants - IOCTL
+    -- ------------------------------------
+
+    -- ???
+    M.IOCPARM_MASK = 0x7f
+
+    -- No Parameters
+    M.IOC_VOID = 0x20000000
+
+    -- Copy out parameters
+    M.IOC_OUT = 0x40000000
+
+    -- Copy in parameters
+    M.IOC_IN = 0x80000000
+
+    -- Note: Macro calls must swap from `u_long` to `unsigned long` !
+    function M._IOR(x, y, t)
+        return bit.bor(
+            M.IOC_OUT,
+            bit.lshift(bit.band(ffi.sizeof(t), M.IOCPARM_MASK), 16),
+            bit.lshift(x, 8),
+            y
+        )
+    end
+
+    function M._IOW(x, y, t)
+        return bit.bor(
+            M.IOC_IN,
+            bit.lshift(bit.band(ffi.sizeof(t), M.IOCPARM_MASK), 16),
+            bit.lshift(x, 8),
+            y
+        )
+    end
+
+    --- Get number of bytes to read
+    -- Should be equal to `1074030207`.
+    ---@see ioctlsocket
+    M.FIONREAD = M._IOR(string.byte('f'), 127, "unsigned long")
+
+    --- Set/clear non-blocking I/O
+    -- Should be equal to `-2147195266`.
+    ---@see ioctlsocket
+    M.FIONBIO = M._IOW(string.byte('f'), 126, "unsigned long")
+
+    --- Set/clear async I/O
+    -- Should be equal to `-2147195267`.
+    ---@see ioctlsocket
+    M.FIOASYNC = M._IOW(string.byte('f'), 125, "unsigned long")
+
+    -- MSVC x64/x86 values:
+    --FIONREAD: 1074030207
+    --FIONBIO: -2147195266
+    --FIOASYNC: -2147195267
+
+    -- LuaJIT x64 values:
+    --FIONREAD: 1074030207
+    --FIONBIO: -2147195266
+    --FIOASYNC: -2147195267
+
 
     -- Bindings - Win32 - DLL Loading
     -- ------------------------------
